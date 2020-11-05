@@ -1,53 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import threading
-import re
 import requests
-from time import sleep
-from datetime import datetime
-from bs4 import BeautifulSoup
-from article.models import ArticleImage
-from crawler.handler.ptt_api import PttApi
-from crawler.handler.db_handler import Image
-
-
-class PttBeautyContent:
-
-    @classmethod
-    def _fetch_image_url(cls, article_url):
-        """
-        Get all images url of the article
-        """
-        source_token = re.compile(r'([^\d]+)([\d]+)').search(article_url).group(2)
-        if not ArticleImage.objects.filter(source_token=source_token):
-            response = PttApi.get_ptt_beauty_response(url=article_url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            title = soup.find_all('span', class_='article-meta-value')[2].text
-
-            image_url_list = list()
-            image_data_list = soup.find('div', id='main-content').find_all('a', rel='nofollow')
-            for image in image_data_list:
-                url = image.get('href')
-                if url and not url.endswith('html'):
-                    image_url_list.append(url)
-            article = {'source_token': source_token, 'title': title, 'url': image_url_list}
-
-            # Insert to database
-            Image.insert_to_db(article=article)
-
-    @classmethod
-    def run(cls, url_list):
-        threads = list()
-        for url in url_list:
-            thread = threading.Thread(target=cls._fetch_image_url, args=(url,))
-            threads.append(thread)
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
-
-        message = f'Insert article contents to database'
-        return message
+from article.models import Beauty
 
 
 class ImageHandler:
@@ -76,7 +31,7 @@ class ImageHandler:
 
     @classmethod
     def _get_article_data(cls, source_token):
-        article = ArticleImage.objects.filter(source_token=source_token)[0]
+        article = Beauty.objects.filter(source_token=source_token)[0]
         category = article.category
         title = article.title
         dir_name = cls._remove_special_char(title, '\/:*?"<>|.')

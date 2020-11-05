@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
+from time import sleep
 
 
 class PttApi:
@@ -11,14 +12,17 @@ class PttApi:
     _cookies = {'over18': '1'}
 
     @classmethod
-    def _request_handler(cls, url, cookies=None, retried=5, timeout=20):
+    def _request_handler(cls, url, cookies=None, retried=5, timeout=10):
         response = None
-        for _ in range(retried):
+        for i in range(retried):
             try:
                 response = requests.get(url=url, headers=cls._HEADERS, cookies=cookies, timeout=timeout)
                 break
-            except AttributeError:
-                continue
+            except requests.exceptions.Timeout:
+                print(f'Timeout {i+1} times: {url}')
+            except requests.exceptions.ConnectionError as e:
+                print(f'Connection refused {i+1} times: {url}')
+                sleep(5)
         return response
 
     @classmethod
