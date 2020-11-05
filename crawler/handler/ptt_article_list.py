@@ -6,8 +6,8 @@ from time import sleep
 from datetime import datetime
 from bs4 import BeautifulSoup
 from article.models import Article
-from handler.ptt_api import PttApi
-from handler.db_handler import ArticleList
+from crawler.handler.ptt_api import PttApi
+from crawler.handler.db_handler import ArticleList
 
 
 class PttBeauty:
@@ -18,7 +18,7 @@ class PttBeauty:
         Get the articles list
         """
         counts += 1
-        response = PttApi.get_ptt_beauty_response(current_page)
+        response = PttApi.get_ptt_beauty_response(url=current_page)
         soup = BeautifulSoup(response.text, 'html.parser')
         articles_list_data = soup.find('div', id='main-container').find_all('div', class_='r-ent')
 
@@ -48,7 +48,7 @@ class PttBeauty:
 
         # Check if need to fetch articles of next page
         next_page = cls._fetch_next_page(current_page)
-        if counts <= pages and next_page:
+        if counts < pages and next_page:
             cls._fetch_article(current_page=next_page, container=container, counts=counts, pages=pages)
 
         return container
@@ -58,11 +58,12 @@ class PttBeauty:
         """
         Get the url of next page
         """
-        response = PttApi.get_ptt_beauty_response(url)
+        response = PttApi.get_ptt_beauty_response(url=url)
         soup = BeautifulSoup(response.text, 'html.parser')
-        next_page_btn = soup.find('div', class_='btn-group btn-group-paging').find_all('a', class_='btn wide')[1]
+        next_page_btn = soup.find('div', class_='btn-group btn-group-paging').find_all('a')[1]
         url = next_page_btn.get('href')
-        url = f'{PttApi.PTT_DOMAIN}{url}'
+        if url:
+            url = f'{PttApi.PTT_DOMAIN}{url}'
         return url
 
     @classmethod
@@ -87,10 +88,9 @@ class PttBeauty:
         message = f'Total articles are: {len(articles_list)}'
 
         cls._insert_to_db(article_list=articles_list)
-        print('Completed')
 
         return message
 
 
 if __name__ == '__main__':
-    pass
+    PttBeauty.run(1)

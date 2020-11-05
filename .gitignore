@@ -1,5 +1,6 @@
 .idea/
 migrations/
+picture/
 db.sqlite3
 
 *.pyc
