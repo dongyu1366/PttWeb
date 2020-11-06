@@ -3,5 +3,6 @@ migrations/
 picture/
 db.sqlite3
 
+myLog.log
 *.pyc
 __pycache__/

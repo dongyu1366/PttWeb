@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import threading
 import re
 from datetime import datetime
@@ -63,7 +64,7 @@ class BeautyCrawler:
             }
             container.append(article)
         except IndexError:
-            print(f'IndexError: {article_url}')
+            logging.warning(f'IndexError: {article_url}')
 
     @staticmethod
     def _fetch_next_page(soup):
@@ -96,8 +97,8 @@ class BeautyCrawler:
             url = image.get('href')
             if url.endswith(('.jpg', '.png', '.jpeg', '.gif')):
                 image_url_list.append(url)
-            elif 'imgur' in url:
-                url = f'{url}.jpg'
+            elif ('imgur' in url) and not (url.endswith('.mp4')):
+                url = f'{url}.png'
                 image_url_list.append(url)
         return image_url_list
 
@@ -139,7 +140,7 @@ class BeautyCrawler:
             self.get_all()
 
     def update(self, pages):
-        for _ in range(pages):
+        for i in range(pages):
             threads = list()
             article_url_list = list()
             article_list = list()
@@ -155,4 +156,5 @@ class BeautyCrawler:
                 thread.join()
 
             self._insert_to_db(article_list=article_list)
+            logging.info(f'Page {i+1} Completed!')
             sleep(2)
