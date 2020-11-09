@@ -86,8 +86,8 @@ DATABASES = {
 Q_CLUSTER = {
     'name': 'DjangORM',
     'workers': 1,
-    'timeout': 600,
-    'retry': 1200,
+    'timeout': 1800,
+    'retry': 2000,
     'queue_limit': 5,
     'bulk': 10,
     'orm': 'default'

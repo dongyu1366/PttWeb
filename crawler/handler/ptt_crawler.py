@@ -98,7 +98,7 @@ class BeautyCrawler:
             if url.endswith(('.jpg', '.png', '.jpeg', '.gif')):
                 image_url_list.append(url)
             elif ('imgur' in url) and not (url.endswith('.mp4')):
-                url = f'{url}.png'
+                url = f'{url}.jpg'
                 image_url_list.append(url)
         return image_url_list
 
