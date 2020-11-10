@@ -43,7 +43,7 @@ def download_images():
 
 def get_token_list():
     source_token_list = list()
-    article_list = Beauty.objects.filter(category='正妹')
+    article_list = Beauty.objects.filter(category='正妹')[0:5]
     for article in article_list:
         token = article.source_token
         source_token_list.append(token)

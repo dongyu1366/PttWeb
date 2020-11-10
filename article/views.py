@@ -1,33 +1,16 @@
-import logging
-import tkinter as tk
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.http import HttpResponse
+from rest_framework.generics import ListAPIView
 from article.models import Beauty
-from crawler.handler.ptt_crawler import BeautyCrawler
-from crawler.handler.image_handler import ImageHandler
-
-LOGGING_FORMAT = '%(asctime)s %(levelname)s: %(message)s'
-DATE_FORMAT = '%Y%m%d %H:%M:%S'
-logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT, datefmt=DATE_FORMAT)
+from article.serializers import BeautySerializer
 
 
 def index(request):
-    # root = tk.Tk()
-    # root.withdraw()
-    # dir_path = tk.filedialog.askdirectory()
-    #
-    # source_token_list = get_token_list()
-    # a = ImageHandler(dir_path)
-    # a.run(source_token_list=source_token_list)
-
-    return HttpResponse('ok')
+    return HttpResponse('OK')
 
 
-def get_token_list():
-    source_token_list = list()
-    article_list = Beauty.objects.all()[0:5]
-    for article in article_list:
-        token = article.source_token
-        source_token_list.append(token)
-    return source_token_list
+class ArticleViewSet(ListAPIView):
+    """
+    API endpoint that allows article to be viewed.
+    """
+    queryset = Beauty.objects.all().order_by('-date')
+    serializer_class = BeautySerializer
