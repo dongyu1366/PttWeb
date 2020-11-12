@@ -3,8 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css"/>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    {% load static %}
+    <script defer src="{% static 'article/index.js' %}"></script>
 </head>
 <body>
-
+<div class="container" id="article">
+    <div>
+        <label for="category">請選擇類別：</label>
+        <select name="category" id="category" v-on:change="onChange($event);fetchApi()">
+            <option value="">全部</option>
+            <option value="正妹">正妹</option>
+            <option value="帥哥">帥哥</option>
+            <option value="神人">神人</option>
+            <option value="廣告">廣告</option>
+            <option value="其他">其他</option>
+        </select>
+        &nbsp;
+        <label for="score">推文多少以上：</label>
+            <select name="score" id="score" v-on:change="onChange($event);fetchApi()">
+            <option value="">All</option>
+            <option value="10">>10</option>
+            <option value="20">>20</option>
+            <option value="30">>30</option>
+            <option value="40">>40</option>
+            <option value="50">>50</option>
+            </select>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Category</th>
+                <th>Score</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tr v-for="(article, index) in articleList">
+            <th>[[index+1]]</th>
+            <td>[[article.category]]</td>
+            <td>[[article.score]]</td>
+            <td><a v-bind:href=[[article.url]]>[[article.title]]</a></td>
+            <td>[[article.author]]</td>
+            <td>[[article.date]]</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>
